@@ -1,0 +1,101 @@
+treechildren::-moz-tree-image(FilenameColumn, computer) {
+  list-style-image: url("chrome://famfamfamsilk/skin/icons/computer.png");
+  margin-right: 3px !important;  
+}
+treechildren::-moz-tree-image(FilenameColumn, server) {
+  list-style-image: url("chrome://famfamfamsilk/skin/icons/server_link.png");
+  margin-right: 3px !important;  
+}
+treechildren::-moz-tree-image(FilenameColumn, directory-open) {
+  list-style-image: url('chrome://komodo/skin/images/folder-open.png');
+  margin-right: 3px;
+}
+treechildren::-moz-tree-image(FilenameColumn, directory-close) {
+  list-style-image: url('chrome://komodo/skin/images/folder-closed.png');
+  margin-right: 3px;
+}
+treechildren::-moz-tree-image(FilenameColumn, file-icon) {
+  list-style-image: url('chrome://komodo/skin/images/existing_file.png');
+  margin-right: 5px !important;
+}
+treechildren::-moz-tree-image(FilenameColumn, xml-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/page_white_code.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, xul-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/application_form.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, html-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/html.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, htm-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/html.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, tpl-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/page_code.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, css-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/css.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, js-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/script_code.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, rb-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/ruby.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, php-icon) {
+/*  list-style-image: url('chrome://famfamfamsilk/skin/icons/page_white_php.png'); */
+  list-style-image: url('chrome://jstreedrive/skin/images/php.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, py-icon) {
+/* list-style-image: url('chrome://famfamfamsilk/skin/icons/arrow_switch.png');
+  list-style-image: url('chrome://komodo/skin/images/lang_python.png'); */
+  list-style-image: url('chrome://jstreedrive/skin/images/python.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, c-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/page_white_c.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, image-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/images.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, arh-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/package_green.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, cmd-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/application_osx_terminal.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, xpi-icon) {
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/bricks.png');
+  margin-right: 5px;
+}
+
+.toggle-hidden-icon
+{
+  list-style-image: url("chrome://komodo/skin/images/tree_select.png");
+}
+
+.server-reload-icon
+{
+  list-style-image: url("chrome://jstreedrive/skin/images/");
+}
+.all-reload-icon
+{
+    list-style-image: url('chrome://famfamfamsilk/skin/icons/arrow_refresh.png');
+}
+.newfolder-icon
+{
+    list-style-image : url("chrome://komodo/skin/global/images/newDirectory.png");
+}

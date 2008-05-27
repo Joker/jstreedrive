@@ -1,0 +1,3 @@
+content jstreedrive jar:jstreedrive.jar!/content/ xpcnativewrappers=yes
+skin jstreedrive classic/1.0 jar:jstreedrive.jar!/skin/
+overlay chrome://komodo/content/komodo.xul chrome://jstreedrive/content/overlay.xul

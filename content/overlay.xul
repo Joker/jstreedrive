@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<!DOCTYPE overlay PUBLIC "-//MOZILLA//DTD XUL V1.0//EN" "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<!-- ***** BEGIN LICENSE BLOCK *****
+   * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   *
+   * The contents of this file are subject to the Mozilla Public License Version
+   * 1.1 (the "License"); you may not use this file except in compliance with
+   * the License. You may obtain a copy of the License at
+   * http://www.mozilla.org/MPL/
+   *
+   * Software distributed under the License is distributed on an "AS IS" basis,
+   * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   * for the specific language governing rights and limitations under the
+   * License.
+   *
+   * The Initial Developer of the Original Code
+   * Portions created by the Initial Developer are Copyright (C) 2008
+   * the Initial Developer. All Rights Reserved.
+   *
+   * Joker <deck@joker.exnet.su>
+   *
+   * Alternatively, the contents of this file may be used under the terms of
+   * either the GNU General Public License Version 2 or later (the "GPL"), or
+   * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   * in which case the provisions of the GPL or the LGPL are applicable instead
+   * of those above. If you wish to allow use of your version of this file only
+   * under the terms of either the GPL or the LGPL, and not to allow others to
+   * use your version of this file under the terms of the MPL, indicate your
+   * decision by deleting the provisions above and replace them with the notice
+   * and other provisions required by the LGPL or the GPL. If you do not delete
+   * the provisions above, a recipient may use your version of this file under
+   * the terms of any one of the MPL, the GPL or the LGPL.
+   *
+   * ***** END LICENSE BLOCK ***** -->
+
+<?xml-stylesheet href="chrome://komodo/skin/global/global.css"       type="text/css"?>
+<?xml-stylesheet href="chrome://komodo/skin/bindings/scrolltabs.css" type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/filepicker.css"          type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/global.css"              type="text/css"?>
+<?xml-stylesheet href="chrome://jstreedrive/skin/jstreedrive.css"    type="text/css"?>
+
+<overlay id="JStreeDriveOverlay"
+         xmlns:html="http://www.w3.org/1999/xhtml"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script src="chrome://jstreedrive/content/dinamicTree.js"       type="application/x-javascript"/>
+    <script src="chrome://jstreedrive/content/servers.js"           type="application/x-javascript"/>
+
+    <menupopup id="tabPicker_popup">
+        <menuitem id="show_jstreedrive_tab"
+            insertafter="show_project_tab"
+            oncommand="uilayout_ensureTabShown('jstreedrive_tab', true)"
+            label="Files" />
+    </menupopup>
+    
+    <menupopup id="menu_view_tabs_popup">
+        <menuitem id="show_jstreedrive_tab2"
+            insertafter="show_project_tab2"
+            class="menuitem-iconic-wide"
+            oncommand="uilayout_ensureTabShown('jstreedrive_tab', true)"
+            label="Files" />
+    </menupopup>
+    
+
+
+    <tabs id="project_toolbox_tabs" minimizeleftcollapsed="false">
+        <tab id="jstreedrive_tab" label="Files"
+             insertafter="project_tab"
+             tooltiptext="Local or remote files"
+             oncommand="JSTreeDrive.servers_tree.focus();"
+             onfocus="JSTreeDrive.servers_tree.focus();"   />
+    </tabs>
+    
+    
+    <tabpanels id="project_toolbox_tabpanels">
+        
+        <popupset>
+            <menupopup id="jstreedrive_edit_Smenu" >
+                <menuitem id="menu_delete_entry" label="Delete" oncommand="JSTreeDrive.on_deleteFiles('S');"/>
+                <menuitem id="menu_rename_entry" label="Rename" oncommand="JSTreeDrive.on_renameFile('S');"/>
+            </menupopup>
+        </popupset>        
+        <popupset>
+            <menupopup id="jstreedrive_edit_Fmenu" >
+                <menuitem id="menu_delete_entry" label="Delete" oncommand="JSTreeDrive.on_deleteFiles('F');"/>
+                <menuitem id="menu_rename_entry" label="Rename" oncommand="JSTreeDrive.on_renameFile('F');"/>
+            </menupopup>
+        </popupset>        
+        <tabpanel flex="1" id="jstreedriveviewbox" insertafter="projectviewbox">
+            <vbox flex="1" id="jstreedrive_main">
+                <hbox align="center" id="jstreedrive_button_panel" style="padding: 2px; padding-top: 0px;">
+                    <toolbarbutton
+                        id="jstreedrive_refresh_button"
+                        tooltiptext="Refresh"
+                        label="Refresh"
+                        buttonstyle="pictures"
+                        class="all-reload-icon"
+                        oncommand="JSTreeDrive.on_reload();" />
+                    <toolbarbutton
+                        id="jstreedrive_refresh_button"
+                        tooltiptext="Create Directory"
+                        label="Refresh"
+                        buttonstyle="pictures"
+                        class="newfolder-icon"
+                        oncommand="JSTreeDrive.on_mkDir();" />
+                    
+                    <spacer flex="1"/>
+                    
+                    <toolbarbutton
+                        id="jstreedrive_accounts_button"
+                        tooltiptext="Accounts"
+                        label="Accounts"
+                        buttonstyle="pictures"
+                        class="server-pref-icon"
+                        oncommand="ko.windowManager.getMainWindow().prefs_doGlobalPrefs('serversItem');" />
+                </hbox>                    
+                
+                <tree id="jstreedrive_S_tree"
+                      flex="1" seltype="single" flags="dont-build-content"
+                      onselect="JSTreeDrive.on_directorySelect(event);"
+                      hidecolumnpicker="true"
+                      style="margin: 0px; padding: 0px;">
+                    <treecols>
+                        <treecol id="tree_col_folder_name"
+                                 primary="true" flex="1"
+                                 hideheader="true"/>
+                    </treecols>
+                    <treechildren  flex="1" context="jstreedrive_edit_Smenu" />
+                </tree>
+
+                <splitter id="jstreedrive_splitter"
+                          collapse="after"
+                          class="grippy_splitter_collapsable"
+                          orient="vertical"
+                          persist="state"
+                          style="margin: 0px; padding: 0px;"><!-- border: none;  -->
+                </splitter>
+
+                <tree id="jstreedrive_F_tree"
+                      flex="1"
+                      seltype="multiple"
+                      onclick="JSTreeDrive.on_remoteOpen(event);"
+                      onkeypress="JSTreeDrive.on_remoteOpen(event);"
+                      style="margin: 0px; padding: 0px;">
+                    <treecols>
+                        <treecol id="remote_file_tree_col_name"
+                                 label="Files name"
+                                 flex="3"
+                                 crop="center"
+                                 persist="width ordinal hidden sortActive sortDirection"
+                                 class="sortDirectionIndicator"
+                                 sortActive="true"/>
+                        <splitter class="tree-splitter" />
+                        <treecol id="remote_file_tree_col_size"
+                                 label="Size"
+                                 flex="1"
+                                 persist="width ordinal hidden sortActive sortDirection"
+                                 class="sortDirectionIndicator"/>
+                        <splitter class="tree-splitter" />
+                        <treecol id="remote_file_tree_col_date"
+                                 label="Date"
+                                 flex="1"
+                                 persist="width ordinal hidden sortActive sortDirection"
+                                 class="sortDirectionIndicator"/>
+                    </treecols>
+                    <treechildren flex="1" context="jstreedrive_edit_Fmenu" />
+                </tree>
+            </vbox>
+        </tabpanel>
+    </tabpanels>
+    
+</overlay>
