@@ -44,23 +44,9 @@
          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-    <script src="chrome://jstreedrive/content/dinamicTree.js"       type="application/x-javascript"/>
-    <script src="chrome://jstreedrive/content/servers.js"           type="application/x-javascript"/>
-
-    <menupopup id="tabPicker_popup">
-        <menuitem id="show_jstreedrive_tab"
-            insertafter="show_project_tab"
-            oncommand="uilayout_ensureTabShown('jstreedrive_tab', true)"
-            label="Files" />
-    </menupopup>
-    
-    <menupopup id="menu_view_tabs_popup">
-        <menuitem id="show_jstreedrive_tab2"
-            insertafter="show_project_tab2"
-            class="menuitem-iconic-wide"
-            oncommand="uilayout_ensureTabShown('jstreedrive_tab', true)"
-            label="Files" />
-    </menupopup>
+    <script src="chrome://jstreedrive/content/dinamicTree.js"   type="application/x-javascript"/>
+    <script src="chrome://jstreedrive/content/imageView.js"     type="application/x-javascript"/>
+    <script src="chrome://jstreedrive/content/servers.js"       type="application/x-javascript"/>
     
 
 
@@ -68,25 +54,26 @@
         <tab id="jstreedrive_tab" label="Files"
              insertafter="project_tab"
              tooltiptext="Local or remote files"
-             oncommand="JSTreeDrive.servers_tree.focus();"
-             onfocus="JSTreeDrive.servers_tree.focus();"   />
+             oncommand="ko.extensions.JSTreeDrive.servers_tree.focus();"
+             onfocus="ko.extensions.JSTreeDrive.servers_tree.focus();"   />
     </tabs>
     
     
     <tabpanels id="project_toolbox_tabpanels">
         
-        <popupset>
-            <menupopup id="jstreedrive_edit_Smenu" >
-                <menuitem id="menu_delete_entry" label="Delete" oncommand="JSTreeDrive.on_deleteFiles('S');"/>
-                <menuitem id="menu_rename_entry" label="Rename" oncommand="JSTreeDrive.on_renameFile('S');"/>
+        <!--<popupset>-->
+            <menupopup id="jstreedrive_edit_Smenu" onpopupshowing="ko.extensions.JSTreeDrive.on_popupShowing(event)" >
+                <menuitem id="menu_rename_S" label="Rename"       class="menuitem-iconic-wide rename-iconz"   oncommand="ko.extensions.JSTreeDrive.on_rename('S');"/>
+                <menuitem id="menu_link_S"   label="Make favorite" class="menuitem-iconic-wide link-iconz"     oncommand="ko.extensions.JSTreeDrive.on_link();"/>
+                <menuitem id="menu_reload_S" label="Reload"       class="menuitem-iconic-wide reload-iconz"   oncommand="ko.extensions.JSTreeDrive.S.init_List_forView();"/>
+                <menuitem id="menu_delete_S" label="Delete"       class="menuitem-iconic-wide delete-iconz"   oncommand="ko.extensions.JSTreeDrive.on_delete('S');"/>
             </menupopup>
-        </popupset>        
-        <popupset>
-            <menupopup id="jstreedrive_edit_Fmenu" >
-                <menuitem id="menu_delete_entry" label="Delete" oncommand="JSTreeDrive.on_deleteFiles('F');"/>
-                <menuitem id="menu_rename_entry" label="Rename" oncommand="JSTreeDrive.on_renameFile('F');"/>
+        <!--</popupset>        -->
+            <menupopup id="jstreedrive_edit_Fmenu">
+                <menuitem id="menu_rename_F" label="Rename" class="menuitem-iconic-wide rename-iconz" oncommand="ko.extensions.JSTreeDrive.on_rename('F');"/>
+                <menuitem id="menu_delete_F" label="Delete" class="menuitem-iconic-wide delete-iconz" oncommand="ko.extensions.JSTreeDrive.on_delete('F');"/>
             </menupopup>
-        </popupset>        
+        
         <tabpanel flex="1" id="jstreedriveviewbox" insertafter="projectviewbox">
             <vbox flex="1" id="jstreedrive_main">
                 <hbox align="center" id="jstreedrive_button_panel" style="padding: 2px; padding-top: 0px;">
@@ -96,14 +83,21 @@
                         label="Refresh"
                         buttonstyle="pictures"
                         class="all-reload-icon"
-                        oncommand="JSTreeDrive.on_reload();" />
+                        oncommand="ko.extensions.JSTreeDrive.on_reload();" />
                     <toolbarbutton
                         id="jstreedrive_refresh_button"
                         tooltiptext="Create Directory"
                         label="Refresh"
                         buttonstyle="pictures"
-                        class="newfolder-icon"
-                        oncommand="JSTreeDrive.on_mkDir();" />
+                        class="newfolder-iconz"
+                        oncommand="ko.extensions.JSTreeDrive.on_mkDir();" />
+                    <toolbarbutton
+                        id="jstreedrive_refresh_button"
+                        tooltiptext="Create File"
+                        label="Refresh"
+                        buttonstyle="pictures"
+                        class="newfile-iconz"
+                        oncommand="ko.extensions.JSTreeDrive.on_mkFile();" />
                     
                     <spacer flex="1"/>
                     
@@ -118,7 +112,7 @@
                 
                 <tree id="jstreedrive_S_tree"
                       flex="1" seltype="single" flags="dont-build-content"
-                      onselect="JSTreeDrive.on_directorySelect(event);"
+                      onselect="ko.extensions.JSTreeDrive.on_directorySelect(event);"
                       hidecolumnpicker="true"
                       style="margin: 0px; padding: 0px;">
                     <treecols>
@@ -139,12 +133,12 @@
 
                 <tree id="jstreedrive_F_tree"
                       flex="1"
-                      seltype="multiple"
-                      onclick="JSTreeDrive.on_remoteOpen(event);"
-                      onkeypress="JSTreeDrive.on_remoteOpen(event);"
-                      style="margin: 0px; padding: 0px;">
+                      seltype="single"
+                      onclick="ko.extensions.JSTreeDrive.on_Open(event);"
+                      onkeypress="ko.extensions.JSTreeDrive.on_Open(event);"
+                      style="margin: 0px; padding: 0px;"><!--seltype="multiple"-->
                     <treecols>
-                        <treecol id="remote_file_tree_col_name"
+                        <treecol id="file_tree_col_name"
                                  label="Files name"
                                  flex="3"
                                  crop="center"
@@ -152,13 +146,13 @@
                                  class="sortDirectionIndicator"
                                  sortActive="true"/>
                         <splitter class="tree-splitter" />
-                        <treecol id="remote_file_tree_col_size"
+                        <treecol id="file_tree_col_size"
                                  label="Size"
                                  flex="1"
                                  persist="width ordinal hidden sortActive sortDirection"
                                  class="sortDirectionIndicator"/>
                         <splitter class="tree-splitter" />
-                        <treecol id="remote_file_tree_col_date"
+                        <treecol id="file_tree_col_date"
                                  label="Date"
                                  flex="1"
                                  persist="width ordinal hidden sortActive sortDirection"

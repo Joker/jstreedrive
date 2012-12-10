@@ -31,20 +31,72 @@
    *
    * ***** END LICENSE BLOCK ***** */
 
-function dinamicTree_serversView(){
-    var atomService          = Components.classes["@mozilla.org/atom-service;1"]
-                              .getService(Components.interfaces.nsIAtomService);
+function $(el) { return document.getElementById(el); }
+
+
+if(typeof(ko) == "undefined") { var ko = {}; }
+if(typeof(ko.extensions) == "undefined") { ko.extensions = {}; }
+
+
+ko.extensions.JSTreeDrive = {
+    osSvc        : Components.classes["@activestate.com/koOs;1"].getService(),
+    prefsSvc     : Components.classes["@activestate.com/koPrefService;1"].
+                         getService(Components.interfaces.koIPrefService),                         
+    rConnectSvc  : Components.classes["@activestate.com/koRemoteConnectionService;1"].
+                         getService(Components.interfaces.koIRemoteConnectionService),
+    docSvc       : Components.classes["@activestate.com/koDocumentService;1"].
+                         getService(Components.interfaces.koIDocumentService),                     
+                         
+    servers_list : null,
+    links        : [],
+    
+    prefs_deleteIt : function(num) {
+        var prefs = this.prefsSvc.prefs;
+        this.links.splice(num,1)
+        
+        if(this.links.length == 0)
+            prefs.deletePref("ko.extensions.JSTreeDrive.links");
+        else
+            prefs.setStringPref("ko.extensions.JSTreeDrive.links", this.links.join(';'));
+        // ko.extensions.JSTreeDrive.prefsSvc.prefs.deletePref('ko.extensions.JSTreeDrive.links')
+    },
+    prefs_loadFrom : function() {
+        var prefs = this.prefsSvc.prefs;
+        
+        if (prefs.hasStringPref("ko.extensions.JSTreeDrive.links")) {
+            var str = prefs.getStringPref("ko.extensions.JSTreeDrive.links")
+            if(str.length > 5)
+                return str;
+            else
+                return false;
+        }else{
+            return false;
+        }
+    },
+    prefs_saveTo : function(lk) {
+        var prefs = this.prefsSvc.prefs;
+        this.links.splice(0,0,lk)
+        
+        prefs.setStringPref("ko.extensions.JSTreeDrive.links", this.links.join(';'));
+    }
+}
+
+
+ko.extensions.JSTreeDrive.S_nsITreeView = function (){
+    var atomService          = Components.classes["@mozilla.org/atom-service;1"].
+                                getService(Components.interfaces.nsIAtomService);
                               
     this.mServerAtom         = atomService.getAtom("server");
     this.mComputerAtom       = atomService.getAtom("computer");
+    this.mLinkAtom           = atomService.getAtom("link");
     this.mDirectoryOpen      = atomService.getAtom("directory-open");
     this.mDirectoryClose     = atomService.getAtom("directory-close");
     this.mFilenameColumnAtom = atomService.getAtom("FilenameColumn");
     
     this.tree_rows    = [];
 }
-dinamicTree_serversView.prototype = {
-    // nsITreeView
+ko.extensions.JSTreeDrive.S_nsITreeView.prototype = {
+// nsITreeView
     set rowCount(c) { throw "readonly property"; },
     get rowCount()  { return this.tree_rows.length;  },
     /* attribute nsITreeSelection selection; */
@@ -84,7 +136,9 @@ dinamicTree_serversView.prototype = {
     
     getCellProperties   : function(num, column, properties) {
         if (this.tree_rows[num].depth == 0) {                   // Depth is 0, it's a server
-            if(this.tree_rows[num].path)
+            if(this.tree_rows[num].link)
+                properties.AppendElement(this.mLinkAtom);            
+            else if(this.tree_rows[num].path)
                 properties.AppendElement(this.mComputerAtom);
             else
                 properties.AppendElement(this.mServerAtom);
@@ -115,24 +169,24 @@ dinamicTree_serversView.prototype = {
         }
         window.setCursor("auto");
     },    
-    // nsITreeView
+// nsITreeView
     
     init_List_forView : function(list){
         this.selection.clearSelection();
         
         this.tree.rowCountChanged(0, -this.tree_rows.length);  // Using rowCountChanged to notify rows were removed
-        this.tree_rows = JSTreeDrive.init_rowsList();
+        this.tree_rows = ko.extensions.JSTreeDrive.init_rowsList();
         this.tree.rowCountChanged(0,  this.tree_rows.length);  // Using rowCountChanged to notify rows were added        
     },
     
     update_fileTree_fromDirRow : function(num) {
         window.setCursor("wait");
         if (num >= 0 && num < this.tree_rows.length){
-            JSTreeDrive.F.set_filesList(this.tree_rows[num].getFileList());
+            ko.extensions.JSTreeDrive.F.set_filesList(this.tree_rows[num].getFileList());
         }
         window.setCursor("auto");
     },
-    clear_subRows : function(num) {
+    clear_subRows   : function(num) {
         var deletecount = 0;
         for (var t = num + 1; t < this.tree_rows.length; t++) {
             if (this.getLevel(t) > this.tree_rows[num].depth) deletecount++;
@@ -142,12 +196,31 @@ dinamicTree_serversView.prototype = {
                 this.tree_rows.splice(num + 1,  deletecount);
             this.tree.rowCountChanged(num + 1, -deletecount);
         }
+    },
+    
+    
+    edit_rowItems   : function(action, start_num, data) {
+        this.selection.clearSelection();
+       
+        this.tree.rowCountChanged(0, -this.tree_rows.length);
+            switch(action)
+            {
+                case 'add':
+                    this.tree_rows.splice(start_num, 0, data);
+                break;
+                case 'del':
+                    this.tree_rows.splice(start_num, 1);
+                break;
+                case 'link':
+                    this.tree_rows.splice(start_num, 0, this.tree_rows[data].mkLink()); 
+                break;            
+            }       
+        this.tree.rowCountChanged(0,  this.tree_rows.length);    
     }
 };
-//
 
 
-function dinamicTree_filesView() {
+ko.extensions.JSTreeDrive.F_nsITreeView = function () {
     // Date service, used to turn timestamp into pretty date string
     this._dateSvc   = Components.classes["@mozilla.org/intl/scriptabledateformat;1"].
                            getService(Components.interfaces.nsIScriptableDateFormat);
@@ -172,13 +245,17 @@ function dinamicTree_filesView() {
     this.mFilePy                = atomService.getAtom("py-icon");
     this.mFileC                 = atomService.getAtom("c-icon");    
     this.mFileImage             = atomService.getAtom("image-icon");    
+    this.mFilePng               = atomService.getAtom("png-icon");    
+    this.mFileGif               = atomService.getAtom("gif-icon");    
+    this.mFileJpg               = atomService.getAtom("jpg-icon");    
     this.mFileArh               = atomService.getAtom("arh-icon");    
     this.mFileCmd               = atomService.getAtom("cmd-icon");    
     this.mFileXpi               = atomService.getAtom("xpi-icon");    
+    this.mFileKpf               = atomService.getAtom("kpf-icon");    
     
     this.file_rows = [];
 }
-dinamicTree_filesView.prototype = {
+ko.extensions.JSTreeDrive.F_nsITreeView.prototype = {
     // nsITreeView
     get rowCount() { return this.file_rows.length; },
 
@@ -201,7 +278,7 @@ dinamicTree_filesView.prototype = {
     getRowProperties    : function(row,prop)   {},
     getColumnProperties : function(column,prop){},
     getCellProperties   : function(row, column, properties) {
-        if (column.id == "remote_file_tree_col_name") {
+        if (column.id == "file_tree_col_name") {
             if(this.file_rows[row].ext){
                 switch(this.file_rows[row].ext)
                 {
@@ -239,9 +316,15 @@ dinamicTree_filesView.prototype = {
                     properties.AppendElement(this.mFileC);       
                     break;
                     case 'jpg':            
-                    case 'jpeg':            
-                    case 'png':            
-                    case 'gif':            
+                    case 'jpeg':
+                    properties.AppendElement(this.mFileJpg);
+                    break;
+                    case 'png':
+                    properties.AppendElement(this.mFilePng);
+                    break;
+                    case 'gif':
+                    properties.AppendElement(this.mFileGif);
+                    break;
                     case 'ico':            
                     case 'bmp':            
                     properties.AppendElement(this.mFileImage);       
@@ -250,7 +333,8 @@ dinamicTree_filesView.prototype = {
                     case 'rar':            
                     case 'tar':            
                     case 'jar':            
-                    case 'bz2':            
+                    case 'bz2':
+                    case 'kpz':    
                     case 'gz':            
                     case '7z':            
                     properties.AppendElement(this.mFileArh);
@@ -263,6 +347,9 @@ dinamicTree_filesView.prototype = {
                     break;
                     case 'xpi': 
                     properties.AppendElement(this.mFileXpi);       
+                    break;
+                    case 'kpf': 
+                    properties.AppendElement(this.mFileKpf);       
                     break;                
                     default:
                     properties.AppendElement(this.mFileAtom);
@@ -276,11 +363,11 @@ dinamicTree_filesView.prototype = {
     getCellText         : function(row, column) {
         var rfInfo = this.file_rows[row];
         switch (column.id) {
-            case 'remote_file_tree_col_name':
+            case 'file_tree_col_name':
                 return rfInfo.name;
-            case 'remote_file_tree_col_size':
+            case 'file_tree_col_size':
                 return rfInfo.size;
-            case 'remote_file_tree_col_date':
+            case 'file_tree_col_date':
                 // pretty date string
                 var modDate = new Date(rfInfo.time * 1000);
                 return this._dateSvc.FormatDateTime("", this._dateSvc.dateFormatShort,
@@ -294,7 +381,6 @@ dinamicTree_filesView.prototype = {
         }
         return "(Unknown column)";
     },
-    //
     
     
     set_filesList : function(files) {
@@ -303,24 +389,8 @@ dinamicTree_filesView.prototype = {
         this.tree.rowCountChanged(0, -this.file_rows.length);
         this.file_rows = files;
         this.tree.rowCountChanged(0,  this.file_rows.length);
-    },
-    open_selectedFiles : function() {
-        var urls = [];
-        var rangeCount = this.selection.getRangeCount();
-        for (var i=0; i < rangeCount; i++) {
-            var start = {}; var end = {};
-            this.selection.getRangeAt(i, start, end);
-            if(this.file_rows[0].path)
-                for (var c=start.value; c <= end.value; c++) {
-                    urls.push(ko.uriparse.localPathToURI(this.file_rows[c].path))
-                }
-            else
-                for (var c=start.value; c <= end.value; c++) {
-                    urls.push(this.file_rows[c].uri);
-                }
-        }
-        if (urls.length > 0) {
-            ko.open.multipleURIs(urls);
-        }
     }
 };
+
+ko.extensions.JSTreeDrive.S = new ko.extensions.JSTreeDrive.S_nsITreeView();
+ko.extensions.JSTreeDrive.F = new ko.extensions.JSTreeDrive.F_nsITreeView();

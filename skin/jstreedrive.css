@@ -6,6 +6,10 @@ treechildren::-moz-tree-image(FilenameColumn, server) {
   list-style-image: url("chrome://famfamfamsilk/skin/icons/server_link.png");
   margin-right: 3px !important;  
 }
+treechildren::-moz-tree-image(FilenameColumn, link) {
+  list-style-image: url('chrome://jstreedrive/skin/images/folder-link.png');
+  margin-right: 3px;
+}
 treechildren::-moz-tree-image(FilenameColumn, directory-open) {
   list-style-image: url('chrome://komodo/skin/images/folder-open.png');
   margin-right: 3px;
@@ -14,6 +18,8 @@ treechildren::-moz-tree-image(FilenameColumn, directory-close) {
   list-style-image: url('chrome://komodo/skin/images/folder-closed.png');
   margin-right: 3px;
 }
+
+
 treechildren::-moz-tree-image(FilenameColumn, file-icon) {
   list-style-image: url('chrome://komodo/skin/images/existing_file.png');
   margin-right: 5px !important;
@@ -65,10 +71,25 @@ treechildren::-moz-tree-image(FilenameColumn, c-icon) {
   list-style-image: url('chrome://famfamfamsilk/skin/icons/page_white_c.png');
   margin-right: 5px;
 }
+
 treechildren::-moz-tree-image(FilenameColumn, image-icon) {
-  list-style-image: url('chrome://famfamfamsilk/skin/icons/images.png');
+  list-style-image: url('chrome://famfamfamsilk/skin/icons/image.png');
   margin-right: 5px;
 }
+treechildren::-moz-tree-image(FilenameColumn, png-icon) {
+  list-style-image: url('chrome://jstreedrive/skin/images/png.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, gif-icon) {
+  list-style-image: url('chrome://jstreedrive/skin/images/gif.png');
+  margin-right: 5px;
+}
+treechildren::-moz-tree-image(FilenameColumn, jpg-icon) {
+  list-style-image: url('chrome://jstreedrive/skin/images/jpg.png');
+  margin-right: 5px;
+}
+
+
 treechildren::-moz-tree-image(FilenameColumn, arh-icon) {
   list-style-image: url('chrome://famfamfamsilk/skin/icons/package_green.png');
   margin-right: 5px;
@@ -81,21 +102,89 @@ treechildren::-moz-tree-image(FilenameColumn, xpi-icon) {
   list-style-image: url('chrome://famfamfamsilk/skin/icons/bricks.png');
   margin-right: 5px;
 }
-
+treechildren::-moz-tree-image(FilenameColumn, kpf-icon) {
+  list-style-image: url('chrome://jstreedrive/skin/images/project_icon.png');
+  margin-right: 5px;
+}
 .toggle-hidden-icon
 {
-  list-style-image: url("chrome://komodo/skin/images/tree_select.png");
-}
-
-.server-reload-icon
-{
-  list-style-image: url("chrome://jstreedrive/skin/images/");
+    list-style-image : url("chrome://komodo/skin/images/tree_select.png");
 }
 .all-reload-icon
 {
-    list-style-image: url('chrome://famfamfamsilk/skin/icons/arrow_refresh.png');
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/arrow_refresh.png');
 }
-.newfolder-icon
+.newfolder-iconz
 {
-    list-style-image : url("chrome://komodo/skin/global/images/newDirectory.png");
+    /*list-style-image : url("chrome://famfamfamsilk/skin/icons/folder_add.png");*/
+    list-style-image : url("chrome://komodo/skin/images/new_live_folder.png");
 }
+.newfile-iconz
+{
+    /*list-style-image : url("chrome://famfamfamsilk/skin/icons/script_add.png");*/
+    list-style-image : url("chrome://komodo/skin/images/new_file.png");
+}
+
+
+/* +++++++++++++++++  popup menu +++++++++++++++++ */
+.reload-iconz
+{
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/arrow_refresh.png');
+}
+.reload-iconz:hover
+{
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/arrow_refresh.png');
+}
+.reload-iconz[disabled="true"],
+.reload-iconz[disabled="true"]:hover,
+.reload-iconz[disabled="true"]:hover:active
+{
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/arrow_refresh.png');
+}
+
+.rename-iconz
+{
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/textfield_rename.png');
+}
+.rename-iconz:hover
+{
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/textfield_rename.png');
+}
+.rename-iconz[disabled="true"],
+.rename-iconz[disabled="true"]:hover,
+.rename-iconz[disabled="true"]:hover:active
+{
+    list-style-image : url('chrome://famfamfamsilk/skin/icons/textfield_rename.png');
+}
+
+.link-iconz
+{
+    list-style-image : url('chrome://jstreedrive/skin/images/folder-link.png');
+}
+.link-iconz:hover
+{
+    list-style-image : url('chrome://jstreedrive/skin/images/folder-link.png');
+}
+.link-iconz[disabled="true"],
+.link-iconz[disabled="true"]:hover,
+.link-iconz[disabled="true"]:hover:active
+{
+    list-style-image : url('chrome://jstreedrive/skin/images/folder-link.png');
+}
+
+.delete-iconz
+{
+    list-style-image : url('chrome://komodo/skin/images/list_item_remove.png');
+}
+.delete-iconz:hover
+{
+    list-style-image : url('chrome://komodo/skin/images/list_item_remove_hover.png');
+}
+.delete-iconz[disabled="true"],
+.delete-iconz[disabled="true"]:hover,
+.delete-iconz[disabled="true"]:hover:active
+{
+    list-style-image : url('chrome://komodo/skin/images/list_item_remove_disable.png');
+}
+
+
